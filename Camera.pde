@@ -11,7 +11,7 @@ public class Camera{
   }
    
    public void lookAt(PVector position, PVector target, PVector up){
-     PVector auxW = position.sub(target);
+     PVector auxW = PVector.sub(position,target);
      float absW = sqrt(auxW.x * auxW.x + auxW.y * auxW.y + auxW.z * auxW.z);   
      PVector W = auxW.div(absW);
      

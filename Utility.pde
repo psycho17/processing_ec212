@@ -1,14 +1,28 @@
+ public final float INVERSE_PI = 0.31830988618379067154;
+ 
+ float uniformRandom1D() {
+    return random(1.0);
+ }
+
+ PVector uniformRandom2D() {
+    return new PVector(uniformRandom1D(), uniformRandom1D());
+ }
+ 
  public ArrayList<PVector> stratifiedSample(int samples){
-   int size = (int)sqrt(samples);
-   ArrayList<PVector> points = new ArrayList<PVector>(samples);
-   
-   for(int i = 0; i < size; i++){
-     for(int j = 0; j < size; j++){
-       PVector offset = new PVector(i, j);
-       points.set(i * size + j, PVector.div(PVector.add(offset, uniform_random_2D()),size));
-     }
-   }
-   return points;
+   ArrayList<PVector> points = new ArrayList(samples);
+    
+    int size = (int)sqrt(samples);
+    
+    for (int i = 0; i < samples; i++) {
+        PVector offset = new PVector(i / size, i % size);
+        PVector point = PVector.add(uniformRandom2D(), offset).div(size);
+        
+        points.add(point);
+    }
+    
+    return points;
+
+ 
  }
  
  public PVector gamma(PVector pVector, float value){
@@ -25,8 +39,8 @@
                        pVector.z * power);
   }
   
-  public float saturate(PVector n){
-    return log(n.dot(n)/ n.y)/log(2);
+  public PVector saturate(PVector n){
+    return new PVector(constrain(n.x, 0, 1.0), constrain(n.y, 0, 1.0), constrain(n.z, 0, 1.0));
   }
   
   public PVector uniform_random_2D(){

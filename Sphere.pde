@@ -1,68 +1,68 @@
-public class Sphere extends Shape{
-   public PVector position;
-   public float radius;
-   
-   public Sphere(){}
-   public Sphere(PVector position, float radius) {
-     this.position = position;
-     this.radius = radius;
-   }
-   
-   //methods from Shape interface
-   @Override
-   public Intersection intersects(Ray ray){
-     Intersection i = new Intersection();
-     
-     PVector L = PVector.sub(position, ray.origin); // L = C - O
-     float tm = L.dot(ray.direction); // tm = L ∙ D
-     float d = sqrt(L.dot(L) -  tm * tm); // d = √(L ∙ L - tm²)
-     float deltaT = sqrt(radius * radius - d * d); // Δt = √(r² - d²)
-     
-     if(tm < 0 || d > radius)
-       return i;
-     else{
-       i.hit = true;
-       i.distance = tm - deltaT;
-       return i;
-     }
-   }
-   
-   @Override
-   public ShaderGlobals calculateShaderGlobals(Ray ray, Intersection intersection){
-        ShaderGlobals shaderGlobals = new ShaderGlobals();
+public class Sphere extends Shape {
+    public PVector position;
+    public float radius;
+    
+    public Sphere() {}
+    public Sphere(PVector position, float radius) {
+        this.position = position;
+        this.radius = radius;
+    }
+    
+    @Override
+    public Intersection intersects(Ray ray) {
+        PVector d = PVector.sub(position, ray.origin);
+        float t = d.dot(ray.direction);
         
-        shaderGlobals.point = ray.point(intersection.distance);
-        shaderGlobals.normal = PVector.sub(shaderGlobals.point, position);
-        float phi = acos(shaderGlobals.normal.y);
-        float theta = atan2(shaderGlobals.normal.x, shaderGlobals.normal.z);
+        if (t < 0)
+            return new Intersection();
         
-        shaderGlobals.uv.x = (1 + theta/PI) * 0.5;
-        shaderGlobals.uv.y = phi/PI;
-        shaderGlobals.tangentU = new PVector(cos(theta), 0, -sin(theta));
-        shaderGlobals.tangentV = new PVector(sin(theta) * cos(phi), -sin(phi), cos(theta) * cos(phi));
-        shaderGlobals.viewDirection = PVector.mult(ray.direction, -1);
-        return shaderGlobals;
-   }
-   
-   @Override
-   public float surfaceArea(){
-     return 4 * PI * radius * radius;
-   }
-   
-   //methods from Light interface
-   @Override
-   public PVector evaluate(ShaderGlobals shaderGlobals){
-     return null; //???
-   }
-   
-   @Override
-   public float pdf(ShaderGlobals shaderGlobals){
-     return 0.1;
-   }
-   
-   @Override
-   public PVector sample(ShaderGlobals shaderGlobals, PVector sample){
-     return position;
-   }
-   
+        float d2 = d.dot(d) - t * t;
+        float r2 = radius * radius;
+        
+        if (d2 > r2)
+            return new Intersection();
+        
+        float dt = sqrt(r2 - d2);
+        
+        return new Intersection(true, t - dt, -1);
+    }
+    @Override
+    public ShaderGlobals calculateShaderGlobals(Ray ray, Intersection intersection) {
+        PVector point = ray.point(intersection.distance);
+        PVector normal = PVector.sub(point, position).normalize();
+        
+        float theta = atan2(normal.x, normal.z);
+        float phi = acos(normal.y);
+        
+        PVector uv = new PVector((theta * INVERSE_PI + 1.0) * 0.5, phi * INVERSE_PI);
+        
+        float st = sin(theta);
+        float sp = sin(phi);
+        float ct = cos(theta);
+        float cp = cos(phi);
+        
+        PVector tangentU = new PVector(ct, 0, -st);
+        PVector tangentV = new PVector(st * cp, -sp, ct * cp);
+        
+        PVector viewDirection = PVector.mult(ray.direction, -1.0);
+        
+        return new ShaderGlobals(point, normal, uv, tangentU, tangentV, viewDirection, null, null, null);
+    }
+    @Override
+    public float surfaceArea() {
+        return 4.0 * PI * radius * radius;
+    }
+    
+    @Override
+    public PVector evaluate(ShaderGlobals shaderGlobals) {
+        return null;
+    }
+    @Override
+    public float pdf(ShaderGlobals shaderGlobals) {
+        return 0;
+    }
+    @Override
+    public PVector sample(ShaderGlobals shaderGlobals, PVector sample) {
+        return null;
+    }
 }

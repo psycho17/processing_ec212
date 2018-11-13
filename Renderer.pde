@@ -47,8 +47,10 @@ public class Renderer{
          totalWeight += weight;
          
        }
-       pVector.div(totalWeight);
-       pImage.set(i, j, (int)saturate(exposure(gamma(pVector, options.gamma), options.exposure)) * 255);
+       pVector.div(totalWeight).mult(255);
+//pVector = saturate(exposure(gamma(pVector, options.gamma), options.exposure)).mult(255.0);
+       
+       pImage.set(i, j, color(pVector.x, pVector.y, pVector.z));
      }
    }
     return pImage;
