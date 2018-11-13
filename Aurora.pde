@@ -1,33 +1,23 @@
-PVector v = new PVector(2, 2);
-PImage pic = createImage(500, 500, RGB);
-
-float g = 9.8;
-float step = 0.1;
-float diameter = 20;
-
-float x0 = 0;
-float y0 = 0;
-
-float vx0 = 50;
-float vy0 = 0;
-
-float t = 0;
-
 void setup() {
-  size(500, 500);
-  
-  pic.set(250, 250, color(255, 0, 0)); //8bits color
+    size(500, 500);
+    
+    RenderOptions options = new RenderOptions(500, 500, 1, 4, 4, 4, 2.0, 2.2, 0);
+    
+    Camera camera = new Camera(radians(45.0), new Film(options.width, options.height), new PMatrix3D());
+    camera.lookAt(new PVector(0, 0, 10), new PVector(0, 0, 0), new PVector(0, 1.0, 0));
+    
+    Sphere sphere = new Sphere(new PVector(0, 0, 0), 2.0);
+    
+    ArrayList<Shape> shapes = new ArrayList();
+    shapes.add(sphere);
+    
+    Scene scene = new Scene(shapes);
+    
+    Renderer renderer = new Renderer(options, camera, scene);
+    
+    image(renderer.render(), 0, 0);
+    
+    noLoop();
 }
 
-//loop
-void draw() {
-  image(pic, 0, 0);
-  //background(0);
-  
-  float x = x0 + vx0 * t;
-  float y = y0 + vy0 * t + 0.5 * g * t * t;
-  
-  t += step;
-  
-  ellipse(x, y, diameter, diameter);
-}
+void draw() {}
