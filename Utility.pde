@@ -55,3 +55,7 @@
   public float gauss2D(PVector pVector, float width){
     return gauss1D(pVector.x, width) * gauss1D(pVector.y, width);
   }
+  
+  PVector multiplyColor(PVector a, PVector b){
+    return new PVector(a.x * b.x, a.y * b.y, a.z * b.z);
+  }

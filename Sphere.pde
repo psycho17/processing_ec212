@@ -3,7 +3,8 @@ public class Sphere extends Shape {
     public float radius;
     
     public Sphere() {}
-    public Sphere(PVector position, float radius) {
+    public Sphere(PVector position, float radius, BSDF bsdf, boolean explicitLight, PVector emission) {
+        super(null, bsdf, explicitLight, emission);
         this.position = position;
         this.radius = radius;
     }
@@ -55,7 +56,7 @@ public class Sphere extends Shape {
     
     @Override
     public PVector evaluate(ShaderGlobals shaderGlobals) {
-        return null;
+        return emission;
     }
     @Override
     public float pdf(ShaderGlobals shaderGlobals) {
